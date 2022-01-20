@@ -8,3 +8,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "PrintfullTest"
 include ':app'
+include ':users'
+include ':core'
