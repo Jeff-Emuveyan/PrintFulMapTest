@@ -2,6 +2,7 @@ package com.example.users.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -105,7 +106,7 @@ class UsersFragment : Fragment(), OnMapReadyCallback {
 
     private fun observeData() {
         lifecycleScope.launch {
-            viewModel.userList.collect { state ->
+            viewModel.dataFetchState.collect { state ->
                 when(state) {
                     is Loading -> { setUpUiState(UIState.LOADING) }
                     is Error -> { setUpUiState(UIState.FAILED) }
@@ -139,6 +140,7 @@ class UsersFragment : Fragment(), OnMapReadyCallback {
                 .title(user.name)
                 .snippet("Address: ${getAddress(context, latitude,longitude)}")
         )
+        viewModel.setUserMarker(user.id, marker)
     }
 
     private fun updateUserOnMap(user: User) {
