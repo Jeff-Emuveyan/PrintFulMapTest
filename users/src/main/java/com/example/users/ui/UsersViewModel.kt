@@ -3,6 +3,7 @@ package com.example.users.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.users.data.model.DataFetchState
+import com.example.users.data.model.Error
 import com.example.users.data.model.Success
 import com.example.users.data.model.User
 import com.example.users.data.repository.UserRepository
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,7 +30,11 @@ class UsersViewModel @Inject constructor(private val userRepository: UserReposit
     fun getUsers() {
             viewModelScope.launch(Dispatchers.IO) {
                 userRepository.user.collect {
-                    addOrUpdateUserList(listOf(it))
+                    if (it != null) {
+                        addOrUpdateUserList(listOf(it))
+                    } else {
+                        _dataFetchState.emit(Error(Exception("")))
+                    }
                 }
             }
     }
