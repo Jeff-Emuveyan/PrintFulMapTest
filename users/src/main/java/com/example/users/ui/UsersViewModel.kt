@@ -5,30 +5,20 @@ import androidx.lifecycle.viewModelScope
 import com.example.users.data.model.DataFetchState
 import com.example.users.data.model.Success
 import com.example.users.data.model.User
+import com.example.users.data.repository.UserRepository
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class UsersViewModel : ViewModel() {
-
-    val ua = User("1", "A", "", LatLng(3.444, 12.444))
-    val ub = User("1", "A", "", LatLng(9.444, 63.444))
-    val uc = User("3", "C", "", LatLng(5.444, 14.444))
-
-    val ud = User("2", "D", "", LatLng(6.444, 15.444))
-    val ue = User("2", "D", "", LatLng(9.444, 26.444))
-    val uf = User("3", "F", "", LatLng(8.444, 17.444))
-
-    val ug = User("1", "G", "", LatLng(9.444, 18.444))
-    val uh = User("2", "H", "", LatLng(10.444, 18.444))
-    val ui = User("3", "I", "", LatLng(11.444, 20.444))
-
-    var a = listOf(ua, ud)
-    var aa = listOf(ub, ue)
+@HiltViewModel
+class UsersViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
 
     private val _dataFetchState = MutableSharedFlow<DataFetchState>()
     var dataFetchState: SharedFlow<DataFetchState> = _dataFetchState
@@ -37,10 +27,9 @@ class UsersViewModel : ViewModel() {
 
     fun getUsers() {
             viewModelScope.launch(Dispatchers.IO) {
-                delay(10_000)
-                addOrUpdateUserList(a)
-                delay(10_000)
-                addOrUpdateUserList(aa)
+                userRepository.user.collect {
+                    addOrUpdateUserList(listOf(it))
+                }
             }
     }
 

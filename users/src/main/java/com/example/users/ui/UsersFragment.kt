@@ -1,17 +1,17 @@
 package com.example.users.ui
 
+
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.users.R
-import com.example.users.data.model.Loading
 import com.example.users.data.model.Error
+import com.example.users.data.model.Loading
 import com.example.users.data.model.Success
 import com.example.users.data.model.User
 import com.example.users.databinding.UsersFragmentBinding
@@ -23,16 +23,18 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class UsersFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         fun newInstance() = UsersFragment()
     }
 
-    private lateinit var viewModel: UsersViewModel
+    private val viewModel: UsersViewModel by viewModels()
     private var _binding: UsersFragmentBinding? = null
     private val binding get() = _binding!!
 
@@ -45,7 +47,6 @@ class UsersFragment : Fragment(), OnMapReadyCallback {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this)[UsersViewModel::class.java]
         initUi()
         fetchData()
         observeData()
