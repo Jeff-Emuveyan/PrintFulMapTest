@@ -3,7 +3,7 @@ package com.example.printfulltest
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.printfulltest.databinding.ActivityMainBinding
-import com.example.users.UsersFragment
+import com.example.users.ui.UsersFragment
 
 class MainActivity : AppCompatActivity() {
 

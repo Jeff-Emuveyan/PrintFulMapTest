@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">My Application</string>
-    <string name="retry">Retry</string>
+    <string name="retry">Click here to retry</string>
+    <string name="loading">Loading…</string>
 </resources>
