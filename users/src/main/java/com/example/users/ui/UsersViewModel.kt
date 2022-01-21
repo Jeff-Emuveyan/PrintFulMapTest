@@ -19,19 +19,16 @@ class UsersViewModel : ViewModel() {
     val ub = User("1", "A", "", LatLng(9.444, 63.444))
     val uc = User("3", "C", "", LatLng(5.444, 14.444))
 
-    val ud = User("1", "D", "", LatLng(6.444, 15.444))
-    val ue = User("2", "E", "", LatLng(7.444, 16.444))
+    val ud = User("2", "D", "", LatLng(6.444, 15.444))
+    val ue = User("2", "D", "", LatLng(9.444, 26.444))
     val uf = User("3", "F", "", LatLng(8.444, 17.444))
 
     val ug = User("1", "G", "", LatLng(9.444, 18.444))
     val uh = User("2", "H", "", LatLng(10.444, 18.444))
     val ui = User("3", "I", "", LatLng(11.444, 20.444))
 
-    var a = listOf(ua)
-    var aa = listOf(ub)
-
-    var b = listOf(ud, ue, uf)
-    var c = listOf(ug, uh, ui)
+    var a = listOf(ua, ud)
+    var aa = listOf(ub, ue)
 
     private val _dataFetchState = MutableSharedFlow<DataFetchState>()
     var dataFetchState: SharedFlow<DataFetchState> = _dataFetchState
