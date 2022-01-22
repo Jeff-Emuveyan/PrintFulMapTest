@@ -11,12 +11,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,7 +26,9 @@ class UsersViewModel @Inject constructor(private val userRepository: UserReposit
     private val currentUserList = mutableListOf<User>()
 
     fun getUsers() {
+
             viewModelScope.launch(Dispatchers.IO) {
+                userRepository.fetchUsers()
                 userRepository.user.collect {
                     if (it != null) {
                         addOrUpdateUserList(listOf(it))
@@ -40,6 +40,8 @@ class UsersViewModel @Inject constructor(private val userRepository: UserReposit
     }
 
     private suspend fun addOrUpdateUserList(responseUserList: List<User>) {
+        if (responseUserList.isEmpty()) return
+
         responseUserList.forEach { user ->
             var userAlreadyExist = false
 

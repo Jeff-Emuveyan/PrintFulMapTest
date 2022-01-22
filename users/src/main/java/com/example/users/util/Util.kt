@@ -12,6 +12,7 @@ import com.google.android.gms.maps.model.Marker
 import android.animation.TypeEvaluator
 import android.location.Geocoder
 import android.util.Property
+import com.example.users.data.model.User
 import java.util.*
 
 fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
