@@ -3,6 +3,7 @@ package com.example.users.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.example.users.data.model.Error
 import com.example.users.data.model.Loading
 import com.example.users.data.model.Success
 import com.example.users.data.model.User
+import com.example.users.databinding.BubbleBinding
 import com.example.users.databinding.UsersFragmentBinding
 import com.example.users.util.LatLngInterpolator
 import com.example.users.util.animateMarker
@@ -22,7 +24,9 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -37,29 +41,35 @@ class UsersFragment : Fragment(), OnMapReadyCallback {
     private val viewModel: UsersViewModel by viewModels()
     private var _binding: UsersFragmentBinding? = null
     private val binding get() = _binding!!
+    private val markers = HashMap<String?, User>()
+    private var _bubbleViewBinding: BubbleBinding? = null
+    val bubbleBinding get() = _bubbleViewBinding!!
 
     private var googleMap: GoogleMap? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = UsersFragmentBinding.inflate(inflater, container, false)
+        _bubbleViewBinding = BubbleBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         initUi()
-        fetchData()
         observeData()
+        fetchData()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        _bubbleViewBinding = null
     }
 
     override fun onMapReady(mMap: GoogleMap) {
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         googleMap = mMap
+        googleMap?.setInfoWindowAdapter(CustomInfoWindowAdapter())
     }
 
     private fun initUi() {
@@ -141,6 +151,7 @@ class UsersFragment : Fragment(), OnMapReadyCallback {
                 .title(user.name)
                 .snippet("Address: ${getAddress(context, latitude,longitude)}")
         )
+        markers[marker?.id] = user
         viewModel.setUserMarker(user.id, marker)
     }
 
@@ -152,5 +163,25 @@ class UsersFragment : Fragment(), OnMapReadyCallback {
 
     enum class UIState {
         LOADING, SUCCESS, FAILED
+    }
+
+    inner class CustomInfoWindowAdapter : GoogleMap.InfoWindowAdapter {
+
+        override fun getInfoContents(p0: Marker): View? {
+            return null
+        }
+
+        override fun getInfoWindow(marker: Marker): View {
+            val user = markers[marker.id]
+            val latitude = user?.currentPosition?.latitude ?: 0.0
+            val longitude = user?.currentPosition?.longitude ?: 0.0
+            bubbleBinding.run {
+              tvName.text = user?.name ?: ""
+              tvAddress.text = getAddress(requireContext(), latitude, longitude)
+              Picasso.get().load(user?.profileImage).placeholder(R.drawable.person)
+                .error(R.drawable.ic_broken_image).into(imageView)
+            }
+            return bubbleBinding.root
+        }
     }
 }
