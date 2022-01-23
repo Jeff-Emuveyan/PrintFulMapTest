@@ -10,6 +10,7 @@ import com.example.users.data.repository.UserRepository
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
@@ -25,7 +26,7 @@ class UsersViewModel @Inject constructor(private val userRepository: UserReposit
     private val currentUserList = mutableListOf<User>()
 
     fun getUsers() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
                 userRepository.user.collect {
                     if (it != null) {
                         addOrUpdateUserList(it)
