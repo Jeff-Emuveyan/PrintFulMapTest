@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
@@ -26,38 +27,33 @@ class UsersViewModel @Inject constructor(private val userRepository: UserReposit
     private val currentUserList = mutableListOf<User>()
 
     fun getUsers() {
-
-            viewModelScope.launch(Dispatchers.IO) {
-                userRepository.fetchUsers()
-                userRepository.user.collect {
-                    if (it != null) {
-                        addOrUpdateUserList(listOf(it))
-                    } else {
-                        _dataFetchState.emit(Error(Exception("")))
-                    }
+        viewModelScope.launch(Dispatchers.IO) {
+            userRepository.user.collect {
+                if (it != null) {
+                    addOrUpdateUserList(it)
+                } else {
+                    _dataFetchState.emit(Error(Exception("")))
                 }
             }
+            userRepository.fetchUsers()
+        }
     }
 
-    private suspend fun addOrUpdateUserList(responseUserList: List<User>) {
-        if (responseUserList.isEmpty()) return
+    private suspend fun addOrUpdateUserList(newUser: User) {
+        var userAlreadyExist = false
 
-        responseUserList.forEach { user ->
-            var userAlreadyExist = false
-
-            currentUserList.forEach { existingUser ->
-                if (user.id == existingUser.id) {
-                    userAlreadyExist = true
-                    existingUser.previousPosition = existingUser.currentPosition
-                    val lat = user.currentPosition?.latitude
-                    val long = user.currentPosition?.longitude
-                    if (lat != null && long != null) {
-                        existingUser.currentPosition = LatLng(lat,long)
-                    }
+        currentUserList.forEach { existingUser ->
+            if (newUser.id == existingUser.id) {
+                userAlreadyExist = true
+                existingUser.previousPosition = existingUser.currentPosition
+                val lat = newUser.currentPosition?.latitude
+                val long = newUser.currentPosition?.longitude
+                if (lat != null && long != null) {
+                    existingUser.currentPosition = LatLng(lat,long)
                 }
             }
-            if (!userAlreadyExist) {currentUserList.add(user)}
         }
+        if (!userAlreadyExist) {currentUserList.add(newUser)}
 
         _dataFetchState.emit(Success(currentUserList))
     }
