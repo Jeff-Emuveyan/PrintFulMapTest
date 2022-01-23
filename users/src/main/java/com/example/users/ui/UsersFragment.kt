@@ -158,7 +158,10 @@ class UsersFragment : Fragment(), OnMapReadyCallback {
     private fun updateUserOnMap(user: User) {
         val latitude = user.currentPosition?.latitude ?: 0.0
         val longitude = user.currentPosition?.longitude ?: 0.0
-        animateMarker(user.marker, LatLng(latitude, longitude), LatLngInterpolator.LinearFixed())
+        val location = LatLng(latitude, longitude)
+        animateMarker(user.marker, location, LatLngInterpolator.LinearFixed())
+
+        markers[user.marker?.id]?.apply { currentPosition = location }
     }
 
     enum class UIState {
