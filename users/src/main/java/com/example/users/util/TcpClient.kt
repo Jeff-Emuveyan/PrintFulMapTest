@@ -1,5 +1,4 @@
 package com.example.users.util
-import android.util.Log
 import java.io.*
 import java.net.InetAddress
 import java.net.Socket
