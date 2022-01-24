@@ -44,5 +44,7 @@ fun getAddress(context: Context, lat: Double, lon: Double): String? {
     val geoCoder = Geocoder(context, Locale.getDefault())
     val resultCount = 1
     val address = geoCoder.getFromLocation(lat, lon, resultCount)
-    return address.firstOrNull()?.adminArea
+    return "${address.firstOrNull()?.countryName}," +
+            " ${address.firstOrNull()?.locality}," +
+            " ${address.firstOrNull()?.thoroughfare}"
 }
