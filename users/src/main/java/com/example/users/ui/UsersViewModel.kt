@@ -25,15 +25,20 @@ class UsersViewModel @Inject constructor(private val userRepository: UserReposit
 
     val currentUserList = mutableListOf<User>()
 
+    override fun onCleared() {
+        super.onCleared()
+        userRepository.stopTCPClient()
+    }
+
     fun getUsers() {
         viewModelScope.launch(Dispatchers.IO) {
-                userRepository.user.collect {
-                    if (it != null) {
-                        addOrUpdateUserList(it)
-                    } else {
-                        _dataFetchState.emit(Error(Exception("")))
-                    }
+            userRepository.user.collect {
+                if (it != null) {
+                    addOrUpdateUserList(it)
+                } else {
+                    _dataFetchState.emit(Error(Exception("")))
                 }
+            }
         }
     }
 

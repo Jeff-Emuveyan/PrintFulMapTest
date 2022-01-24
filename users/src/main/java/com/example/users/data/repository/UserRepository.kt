@@ -1,35 +1,37 @@
 package com.example.users.data.repository
 
-import android.util.Log
 import com.example.users.data.model.User
 import com.example.users.util.TcpClient
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import java.io.BufferedReader
-import java.io.PrintWriter
-import java.net.Socket
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-open class UserRepository @Inject constructor() {
+open class UserRepository @Inject constructor (val tcpClient: TcpClient) {
 
-    lateinit var _bufferOut: PrintWriter
-    lateinit var _bufferIn: BufferedReader
+    companion object {
+        const val SERVER_IP = "ios-test.printful.lv"
+        const val SERVER_PORT = 6111
+    }
 
-    private var socket: Socket? = null
-    private val ServerIP = "ios-test.printful.lv"
-    private val ServerPort = 6111
-
-    private val _user = MutableSharedFlow<User?>()
-    var user: SharedFlow<User?> = _user
-
-    suspend fun fetchUsers() {
-        Log.e("KANE", "JEFFFFF")
-        Log.e("JEFF","Server is running")
-        val t = TcpClient{
-            Log.e("JEFF","My message $it")
+    var user = flow<User?> {
+        try{
+            tcpClient.connect(SERVER_IP, SERVER_PORT)
+            tcpClient.writeToServer("AUTHORIZE \n")
+            tcpClient.readFromServer {
+                if (it == null) {
+                    emit(null)
+                } else {
+                    val users = getUsersFromServerResponse(it)
+                    users.forEach { user -> emit(user) }
+                }
+            }
+        } catch (e: Exception) {
+            emit(null)
         }
-        t.run()
+    }
+
+    fun stopTCPClient() {
+        tcpClient.stopClient()
     }
 
     fun getUsersFromServerResponse(response: String): List<User> {
