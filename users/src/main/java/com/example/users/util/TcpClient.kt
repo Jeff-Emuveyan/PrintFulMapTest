@@ -27,7 +27,6 @@ open class TcpClient @Inject constructor() {
     suspend fun readFromServer(response: suspend (String?) -> Unit) {
         while (shouldRun) {
             val message = bufferIn?.readLine()
-            Log.e("JEFF", message ?: "")
             response.invoke(message)
         }
     }

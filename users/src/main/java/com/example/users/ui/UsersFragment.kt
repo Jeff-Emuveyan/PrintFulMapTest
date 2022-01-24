@@ -20,9 +20,11 @@ import com.example.users.databinding.UsersFragmentBinding
 import com.example.users.util.LatLngInterpolator
 import com.example.users.util.animateMarker
 import com.example.users.util.getAddress
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -143,6 +145,9 @@ class UsersFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addUserOnMap(context: Context, googleMap: GoogleMap, user: User) {
+        val existingMaker = markers[user.marker?.id]
+        if (existingMaker != null) return
+
         val latitude = user.currentPosition?.latitude ?: 0.0
         val longitude = user.currentPosition?.longitude ?: 0.0
         val marker = googleMap.addMarker(
@@ -153,6 +158,19 @@ class UsersFragment : Fragment(), OnMapReadyCallback {
         )
         markers[marker?.id] = user
         viewModel.setUserMarker(user.id, marker)
+
+        zoomCameraToLocation(latitude, longitude)
+    }
+
+    private fun zoomCameraToLocation(latitude: Double, longitude: Double) {
+        val googlePlex = CameraPosition.builder()
+            .target(LatLng(latitude, longitude))
+            .zoom(16f)
+            .bearing(0f)
+            .tilt(45f)
+            .build()
+
+        googleMap?.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 3000, null)
     }
 
     private fun updateUserOnMap(user: User) {

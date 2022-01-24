@@ -3,6 +3,7 @@ package com.example.users.data.repository
 import com.example.users.data.model.User
 import com.example.users.util.TcpClient
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -22,7 +23,10 @@ open class UserRepository @Inject constructor (val tcpClient: TcpClient) {
                     emit(null)
                 } else {
                     val users = getUsersFromServerResponse(it)
-                    users.forEach { user -> emit(user) }
+                    users.forEach { user ->
+                        delay(4000)
+                        emit(user)
+                    }
                 }
             }
         } catch (e: Exception) {
