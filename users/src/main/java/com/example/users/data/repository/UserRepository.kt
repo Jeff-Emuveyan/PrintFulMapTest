@@ -11,7 +11,7 @@ import java.io.PrintWriter
 import java.net.Socket
 import javax.inject.Inject
 
-class UserRepository @Inject constructor() {
+open class UserRepository @Inject constructor() {
 
     lateinit var _bufferOut: PrintWriter
     lateinit var _bufferIn: BufferedReader

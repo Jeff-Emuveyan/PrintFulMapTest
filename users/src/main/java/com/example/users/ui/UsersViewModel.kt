@@ -23,7 +23,7 @@ class UsersViewModel @Inject constructor(private val userRepository: UserReposit
     private val _dataFetchState = MutableSharedFlow<DataFetchState>()
     var dataFetchState: SharedFlow<DataFetchState> = _dataFetchState
 
-    private val currentUserList = mutableListOf<User>()
+    val currentUserList = mutableListOf<User>()
 
     fun getUsers() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -37,7 +37,7 @@ class UsersViewModel @Inject constructor(private val userRepository: UserReposit
         }
     }
 
-    private suspend fun addOrUpdateUserList(newUser: User) {
+    suspend fun addOrUpdateUserList(newUser: User) {
         var userAlreadyExist = false
 
         currentUserList.forEach { existingUser ->
