@@ -2,6 +2,7 @@ package com.example.users.ui
 
 import com.example.users.data.model.User
 import com.example.users.data.repository.UserRepository
+import com.example.users.util.TcpClient
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
@@ -36,5 +37,8 @@ class UsersViewModelTest {
         Assert.assertEquals(3.33, user.currentPosition!!.longitude, 0.0)
     }
 
-    class MyFakeRepository() : UserRepository()
+    class FakeTcpClient(): TcpClient() {
+
+    }
+    class MyFakeRepository() : UserRepository(FakeTcpClient())
 }
